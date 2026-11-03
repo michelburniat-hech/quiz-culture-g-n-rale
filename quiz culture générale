@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz de Culture Générale - Enseignement Supérieur</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between selection:bg-indigo-500 selection:text-white">
+
+    <!-- Header -->
+    <header class="w-full bg-slate-900 border-b border-slate-800 py-4 px-6 shadow-md">
+        <div class="max-w-xl mx-auto flex justify-between items-center">
+            <h1 class="text-lg font-bold bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">Culture Générale Sup.</h1>
+            <span id="progress-badge" class="text-xs font-medium bg-slate-800 text-slate-300 px-3 py-1 rounded-full border border-slate-700">Question 1 / 10</span>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="w-full max-w-xl mx-auto p-4 sm:p-6 flex-grow flex flex-col justify-center">
+        
+        <!-- Welcome Screen -->
+        <div id="welcome-screen" class="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl text-center space-y-6">
+            <div class="w-16 h-16 bg-indigo-600/20 border border-indigo-500/30 rounded-2xl flex items-center justify-center mx-auto text-indigo-400 text-2xl font-bold">
+                🎓
+            </div>
+            <div class="space-y-2">
+                <h2 class="text-2xl font-bold tracking-tight">Quiz d'Excellence Universitaire</h2>
+                <p class="text-slate-400 text-sm leading-relaxed">
+                    Testez vos connaissances de niveau supérieur à travers 10 questions rigoureuses couvrant la philosophie, l'économie, les sciences, l'histoire et la géopolitique.
+                </p>
+            </div>
+            <button onclick="startQuiz()" class="w-full py-3.5 px-6 bg-indigo-600 hover:bg-indigo-500 active:scale-[0.98] transition-all font-semibold rounded-xl shadow-lg shadow-indigo-600/25 cursor-pointer">
+                Commencer le questionnaire
+            </button>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="hidden space-y-6">
+            <!-- Progress Bar -->
+            <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden border border-slate-700/50">
+                <div id="progress-bar" class="bg-indigo-500 h-full transition-all duration-300" style="width: 10%"></div>
+            </div>
+
+            <!-- Question Card -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
+                <h3 id="question-text" class="text-lg sm:text-xl font-semibold leading-snug">
+                    Question text goes here...
+                </h3>
+
+                <!-- Options -->
+                <div id="options-container" class="space-y-3">
+                    <!-- Dynamic Options -->
+                </div>
+            </div>
+
+            <!-- Rationale Box (Hidden initially) -->
+            <div id="rationale-container" class="hidden bg-slate-900/90 border border-slate-800 rounded-2xl p-5 shadow-lg space-y-3">
+                <div class="flex items-center space-x-2">
+                    <span id="feedback-icon" class="text-lg"></span>
+                    <h4 id="feedback-title" class="font-semibold text-sm">Explication</h4>
+                </div>
+                <p id="rationale-text" class="text-xs sm:text-sm text-slate-300 leading-relaxed"></p>
+                <button onclick="nextQuestion()" class="w-full py-3 bg-slate-800 hover:bg-slate-700 active:scale-[0.98] transition-all font-medium text-sm rounded-xl border border-slate-700 cursor-pointer">
+                    Question suivante →
+                </button>
+            </div>
+        </div>
+
+        <!-- Result Screen -->
+        <div id="result-screen" class="hidden bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl text-center space-y-6">
+            <div class="w-20 h-20 bg-indigo-600/20 border border-indigo-500/30 rounded-3xl flex items-center justify-center mx-auto text-3xl">
+                🏆
+            </div>
+            <div class="space-y-2">
+                <h2 class="text-2xl font-bold tracking-tight">Résultat Final</h2>
+                <p id="score-display" class="text-3xl font-extrabold text-indigo-400">8 / 10</p>
+                <p id="score-message" class="text-slate-400 text-sm pt-2"></p>
+            </div>
+            <button onclick="restartQuiz()" class="w-full py-3.5 px-6 bg-indigo-600 hover:bg-indigo-500 active:scale-[0.98] transition-all font-semibold rounded-xl shadow-lg shadow-indigo-600/25 cursor-pointer">
+                Recommencer le quiz
+            </button>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full text-center py-4 text-xs text-slate-500 border-t border-slate-900">
+        Optimisé pour smartphones et tablettes — Enseignement Supérieur
+    </footer>
+
+    <!-- Quiz Logic Script -->
+    <script>
+        const quizData = [
+            {
+                question: "Quel économiste est à l'origine du concept de la « destruction créatrice », décrivant le processus par lequel l'innovation détruit les structures économiques obsolètes pour en créer de nouvelles ?",
+                options: [
+                    { text: "John Maynard Keynes", isCorrect: false, rationale: "Keynes est célèbre pour ses travaux sur la demande globale et le rôle stabilisateur de l'État en période de crise, non pour la destruction créatrice." },
+                    { text: "Joseph Schumpeter", isCorrect: true, rationale: "Joseph Schumpeter introduit ce concept dans son ouvrage *Capitalisme, Socialisme et Démocratie* (1942) pour expliquer la dynamique cyclique du capitalisme." },
+                    { text: "Adam Smith", isCorrect: false, rationale: "Adam Smith est le père de l'économie classique, connu pour la métaphore de la « main invisible » et la division du travail." },
+                    { text: "Karl Marx", isCorrect: false, rationale: "Bien qu'il analyse les crises du capitalisme, Marx associe l'évolution à la lutte des classes et à la contradiction entre forces productives et rapports de production." }
+                ]
+            },
+            {
+                question: "Quel traité international signé en 1648 met fin à la guerre de Trente Ans et consacre le principe moderne de la souveraineté des États ?",
+                options: [
+                    { text: "Le Traité de Westphalie", isCorrect: true, rationale: "Les traités de Westphalie (Osnabrück et Münster) posent les bases du droit international moderne et de l'équilibre des puissances en Europe." },
+                    { text: "Le Congrès de Vienne", isCorrect: false, rationale: "Le Congrès de Vienne (1815) réorganise l'Europe après la chute de Napoléon Ier." },
+                    { text: "Le Traité de Versailles", isCorrect: false, rationale: "Le Traité de Versailles (1919) règle le sort de l'Allemagne à l'issue de la Première Guerre mondiale." },
+                    { text: "Les Accords de Yalta", isCorrect: false, rationale: "Yalta (1945) réunit les Alliés en fin de Seconde Guerre mondiale pour organiser le partage de l'Europe." }
+                ]
+            },
+            {
+                question: "En philosophie morale, quel philosophe des Lumières formule l'« impératif catégorique », enjoignant d'agir selon une maxime telle qu'elle puisse être érigée en loi universelle ?",
+                options: [
+                    { text: "Jean-Jacques Rousseau", isCorrect: false, rationale: "Rousseau développe le concept de volonté générale et du contrat social, mais pas l'impératif catégorique." },
+                    { text: "René Descartes", isCorrect: false, rationale: "Descartes est le fondateur du rationalisme moderne avec son « Cogito, ergo sum » et son doute méthodique." },
+                    { text: "Emmanuel Kant", isCorrect: true, rationale: "Kant expose l'impératif catégorique dans ses *Fondements de la métaphysique des mœurs* et sa *Critique de la raison pratique*." },
+                    { text: "David Hume", isCorrect: false, rationale: "Hume est une figure majeure de l'empirisme et du scepticisme écossais, axé sur la sensibilité et la coutume morale." }
+                ]
+            },
+            {
+                question: "En sociologie, comment nomme-t-on le concept forgé par Pierre Bourdieu désignant les dispositions durables et transposables, schémas de perception et d'action acquis par la socialisation ?",
+                options: [
+                    { text: "L'habitus", isCorrect: true, rationale: "L'habitus permet à Bourdieu de lier structure sociale et pratiques individuelles sans tomber dans le déterminisme absolu." },
+                    { text: "L'anomie", isCorrect: false, rationale: "L'anomie (concept d'Émile Durkheim) désigne l'affaiblissement des normes sociales dans une société en mutation." },
+                    { text: "L'ethnocentrisme", isCorrect: false, rationale: "L'ethnocentrisme est la tendance à privilégier et juger les autres cultures à l'aune de sa propre culture." },
+                    { text: "Le capital symbolique", isCorrect: false, rationale: "Le capital symbolique désigne le prestige, la reconnaissance ou l'honneur, distinct de l'habitus bien qu'articulé avec lui." }
+                ]
+            },
+            {
+                question: "Quel théorème mathématique et logique, démontré par Kurt Gödel en 1931, établit que tout système formel cohérent assez riche contient des propositions vraies indémontrables dans ce système ?",
+                options: [
+                    { text: "Le théorème de Pythagore", isCorrect: false, rationale: "Le théorème de Pythagore est une relation géométrique fondamentale dans les triangles rectangles." },
+                    { text: "Le théorème d'incomplétude", isCorrect: true, rationale: "Les théorèmes d'incomplétude de Gödel ont profondément bouleversé les fondements des mathématiques et de la philosophie de la connaissance au XXe siècle." },
+                    { text: "Le théorème des restes chinois", isCorrect: false, rationale: "Il s'agit d'un résultat classique d'arithmétique modulaire concernant la résolution de systèmes de congruences." },
+                    { text: "Le théorème de Bayes", isCorrect: false, rationale: "Le théorème de Bayes permet de calculer la probabilité conditionnelle d'un événement sachant la réalisation d'un autre." }
+                ]
+            },
+            {
+                question: "Comment qualifie-t-on l'époque géologique actuelle, proposée pour la première fois par Paul Crutzen, au cours de laquelle l'activité humaine est devenue la force principale modifiant les écosystèmes terrestres ?",
+                options: [
+                    { text: "Le Pléistocène", isCorrect: false, rationale: "Le Pléistocène est la période géologique précédente, marquée par les cycles de glaciations successives." },
+                    { text: "L'Holocène", isCorrect: false, rationale: "L'Holocène est l'époque géologique interglaciaire débutant il y a environ 11 700 ans, qui précède (ou englobe selon les définitions) l'Anthropocène." },
+                    { text: "L'Anthropocène", isCorrect: true, rationale: "L'Anthropocène désigne l'ère géologique marquée par l'empreinte globale et durable de l'humanité sur la planète." },
+                    { text: "Le Miocène", isCorrect: false, rationale: "Le Miocène est une époque du Néogène, il y a plusieurs millions d'années, bien avant l'apparition d'Homo sapiens." }
+                ]
+            },
+            {
+                question: "En physique quantique, que stipule le principe d'incertitude formulé par Werner Heisenberg en 1927 ?",
+                options: [
+                    { text: "Il est impossible de mesurer simultanément et avec une précision arbitraire la position et la quantité de mouvement d'une particule.", isCorrect: true, rationale: "Cette incertitude est une propriété intrinsèque de la nature ondulatoire et quantique de la matière, et non une limite instrumentale." },
+                    { text: "L'énergie totale d'un système isolé varie de manière aléatoire au cours du temps.", isCorrect: false, rationale: "Le principe de conservation de l'énergie demeure strictement valide en physique quantique." },
+                    { text: "La vitesse de la lumière dans le vide dépend de l'observateur en mouvement.", isCorrect: false, rationale: "C'est l'inverse : la constance de la vitesse de la lumière est le postulat de base de la relativité restreinte d'Einstein." },
+                    { text: "Les électrons suivent des orbites circulaires rigoureuses autour du noyau atomique.", isCorrect: false, rationale: "C'est le modèle de Bohr, obsolète face à la mécanique quantique où l'on parle de fonctions d'onde et de densités de probabilité." }
+                ]
+            },
+            {
+                question: "Quel mouvement artistique et architectural fondé en Allemagne par Walter Gropius en 1919 a prôné l'union de l'art, de l'artisanat et de la production industrielle ?",
+                options: [
+                    { text: "Le Bauhaus", isCorrect: true, rationale: "Le Bauhaus a révolutionné le design moderne, l'architecture et les arts appliqués en privilégiant la fonctionnalité et la rationalité de la production." },
+                    { text: "Le Dadaïsme", isCorrect: false, rationale: "Le dadaïsme est un mouvement contestataire, absurde et provocateur né pendant la Première Guerre mondiale." },
+                    { text: "L'Art Nouveau", isCorrect: false, rationale: "L'Art nouveau s'inspire des formes organiques de la nature (fin XIXe - début XXe siècle), avant l'émergence du design industriel du Bauhaus." },
+                    { text: "Le Constructivisme", isCorrect: false, rationale: "Le constructivisme est un mouvement artistique soviétique d'avant-garde axé sur l'utilité sociale de l'art et l'ingénierie." }
+                ]
+            },
+            {
+                question: "En psychologie et en sciences cognitives, comment nomme-t-on le biais cognitif par lequel les personnes incompétentes dans un domaine surestiment leurs compétences et leur propre valeur ?",
+                options: [
+                    { text: "L'effet de halo", isCorrect: false, rationale: "L'effet de halo consiste à généraliser un trait de personnalité (physique ou autre) à l'ensemble du jugement d'une personne." },
+                    { text: "L'effet Dunning-Kruger", isCorrect: true, rationale: "Identifié par David Dunning et Justin Kruger, ce biais métacognitif montre que les moins qualifiés manquent de lucidité pour évaluer leur propre niveau." },
+                    { text: "Le biais de confirmation", isCorrect: false, rationale: "Le biais de confirmation pousse à privilégier les informations qui confirment nos croyances préexistantes et à rejeter le reste." },
+                    { text: "L'effet de simple exposition", isCorrect: false, rationale: "Il s'agit de la tendance à accroître notre appréciation d'un stimulus à force d'y être exposé de manière répétée." }
+                ]
+            },
+            {
+                question: "Quel événement géopolitique majeur de la guerre froide, survenu en octobre 1962, a mené le monde au plus près d'un conflit nucléaire mondial ?",
+                options: [
+                    { text: "La construction du Mur de Berlin", isCorrect: false, rationale: "Le mur de Berlin a été érigé en août 1961, constituant une tension majeure mais distincte de la crise des missiles." },
+                    { text: "La crise des missiles de Cuba", isCorrect: true, rationale: "L'installation de missiles soviétiques à Cuba, découverte par des avions espions américains U-2, a provoqué un blocus naval et une confrontation de 13 jours." },
+                    { text: "La guerre du Kippour", isCorrect: false, rationale: "La guerre du Kippour a eu lieu en octobre 1973 au Proche-Orient." },
+                    { text: "L'invasion de la baie des Cochons", isCorrect: false, rationale: "Cette tentative de débarquement ratée par des exilés cubains soutenus par la CIA a eu lieu en avril 1961." }
+                ]
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let answered = false;
+
+        const welcomeScreen = document.getElementById('welcome-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const progressBar = document.getElementById('progress-bar');
+        const progressBadge = document.getElementById('progress-badge');
+        const rationaleContainer = document.getElementById('rationale-container');
+        const feedbackIcon = document.getElementById('feedback-icon');
+        const feedbackTitle = document.getElementById('feedback-title');
+        const rationaleText = document.getElementById('rationale-text');
+        const scoreDisplay = document.getElementById('score-display');
+        const scoreMessage = document.getElementById('score-message');
+
+        function startQuiz() {
+            welcomeScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+            currentQuestionIndex = 0;
+            score = 0;
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            answered = false;
+            rationaleContainer.classList.add('hidden');
+            
+            const q = quizData[currentQuestionIndex];
+            questionText.textContent = q.question;
+            
+            // Update Progress
+            const progressPct = ((currentQuestionIndex + 1) / quizData.length) * 100;
+            progressBar.style.width = `${progressPct}%`;
+            progressBadge.textContent = `Question ${currentQuestionIndex + 1} / ${quizData.length}`;
+
+            // Render options
+            optionsContainer.innerHTML = '';
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-4 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 transition-all text-sm sm:text-base font-medium flex items-center justify-between group cursor-pointer active:scale-[0.99]";
+                btn.innerHTML = `<span>${opt.text}</span><span class="text-slate-500 group-hover:text-indigo-400 font-mono text-xs">0${idx+1}</span>`;
+                btn.onclick = () => selectOption(idx, btn);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function selectOption(selectedIndex, selectedBtn) {
+            if (answered) return;
+            answered = true;
+
+            const q = quizData[currentQuestionIndex];
+            const optionButtons = optionsContainer.children;
+
+            q.options.forEach((opt, idx) => {
+                const btn = optionButtons[idx];
+                btn.disabled = true;
+                if (opt.isCorrect) {
+                    btn.classList.remove('bg-slate-800/80', 'border-slate-700/60');
+                    btn.classList.add('bg-emerald-950/60', 'border-emerald-500/50', 'text-emerald-200');
+                } else if (idx === selectedIndex) {
+                    btn.classList.remove('bg-slate-800/80', 'border-slate-700/60');
+                    btn.classList.add('bg-rose-950/60', 'border-rose-500/50', 'text-rose-200');
+                } else {
+                    btn.classList.add('opacity-50');
+                }
+            });
+
+            const isCorrect = q.options[selectedIndex].isCorrect;
+            if (isCorrect) score++;
+
+            // Show rationale
+            feedbackIcon.textContent = isCorrect ? "✅" : "❌";
+            feedbackTitle.textContent = isCorrect ? "Excellente réponse !" : "Réponse incorrecte";
+            feedbackTitle.className = `font-semibold text-sm ${isCorrect ? "text-emerald-400" : "text-rose-400"}`;
+            rationaleText.textContent = q.options[selectedIndex].rationale;
+            rationaleContainer.classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < quizData.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            quizScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+            scoreDisplay.textContent = `${score} / ${quizData.length}`;
+
+            let msg = "";
+            const pct = (score / quizData.length) * 100;
+            if (pct >= 90) {
+                msg = "Mention Très Bien ! Votre culture générale académique est remarquable.";
+            } else if (pct >= 70) {
+                msg = "Mention Bien ! Solide maîtrise des concepts universitaires clés.";
+            } else if (pct >= 50) {
+                msg = "Mention Passable. De bonnes bases, mais quelques notions fondamentales restent à approfondir.";
+            } else {
+                msg = "Des efforts soutenus et des lectures complémentaires seront nécessaires pour consolider votre bagage culturel supérieur.";
+            }
+            scoreMessage.textContent = msg;
+        }
+
+        function restartQuiz() {
+            resultScreen.classList.add('hidden');
+            welcomeScreen.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
+```eof
+
